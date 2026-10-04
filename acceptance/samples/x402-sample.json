@@ -1,0 +1,10 @@
+{
+  "txHash": "0xsmoke01",
+  "network": "eip155:84532",
+  "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+  "amountMicros": 100000,
+  "payTo": "0xSeller",
+  "settledAt": "2026-10-03T17:28:22Z",
+  "usageUnits": 1,
+  "attribution": { "referrerId": "referring-agent" }
+}
