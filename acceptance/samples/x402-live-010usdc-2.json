@@ -1,0 +1,13 @@
+{
+  "amountMicros": 100000,
+  "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+  "attribution": {
+    "referrerId": "referring-agent"
+  },
+  "network": "eip155:84532",
+  "payTo": "0x2615e1327C092421f389Bb2c992d8C28b9C2639D",
+  "settledAt": "2026-10-04T02:14:57Z",
+  "settlementNote": "Second distinct real Base Sepolia settlement via EIP-3009 transferWithAuthorization, block 47655904. No graph reconfiguration.",
+  "txHash": "0x5e68be94cae1b74af31d1a1fe23483c9eae5a50a74ab4e7363f419f33bc9e617",
+  "usageUnits": 1
+}
