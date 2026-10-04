@@ -175,3 +175,7 @@ ACCEPTANCE.md          # §14 criterion-by-criterion evidence
 | Weighted multi-touch attribution, oracle milestones, stablecoin payout rail, LICENSE registry adjudication, contribution-graph verification | Modeled, not executed |
 | Tax filing, securities-like revenue interests, dispute arbitration, multi-currency netting | Not yet modeled |
 | Live-rail real-money acceptance | Passed 2026-10-03/04: Stripe $1.00, x402 2x 0.10 USDC (Base Sepolia), royalty CSV $1,000 (see ACCEPTANCE.md) |
+
+## Links
+
+- Telegram: https://t.me/PAYLOADTOOLS
