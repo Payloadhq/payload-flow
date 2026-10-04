@@ -1,0 +1,13 @@
+{
+  "amountMicros": 100000,
+  "asset": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+  "attribution": {
+    "referrerId": "referring-agent"
+  },
+  "network": "eip155:84532",
+  "payTo": "0x2615e1327C092421f389Bb2c992d8C28b9C2639D",
+  "settledAt": "2026-10-04T02:14:35Z",
+  "settlementNote": "Real Base Sepolia settlement via EIP-3009 transferWithAuthorization (x402 exact scheme primitive), block 47655883. Buyer-signed authorization verified locally (signature recovers to buyer). x402.org facilitator /verify could not verify this token (invalid_exact_evm_missing_eip712_domain: testnet USDC lacks EIP-5267); settlement submitted directly on-chain. Self-pay (buyer == seller) for this rail test.",
+  "txHash": "0x697a0478728b99217186c49a896a7efea31f309f0fd925fc87db00978c6a3f4b",
+  "usageUnits": 1
+}
