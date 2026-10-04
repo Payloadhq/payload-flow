@@ -7,6 +7,12 @@ stateful, cross-rail rule graph. One engine, no industry branches:
 creative-economics splits, SaaS marketplace payouts, and machine-commerce
 micropayments are all configurations of the same generic primitives.
 
+**Live now:** the hosted Rail API at `https://payload-rail.fly.dev`
+([quickstart](https://payloadhq.github.io/flow-rail.html)). Get a free API
+key with one curl call, define a graph, send events. Or run the
+[Flow Sandbox](https://payloadhq.github.io/flow-sandbox.html) in your
+browser with no key at all.
+
 ## What it is
 
 - A deterministic **evaluation engine**: rules consume from the pool
