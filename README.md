@@ -1,6 +1,6 @@
-# Payload Flow MVP — the Payload Rail
+# RevRule by Payload — Programmable Revenue Rules Engine
 
-**Programmable revenue infrastructure engine.** The Payload Rail turns any
+**Programmable revenue rules engine.** RevRule turns any
 qualifying economic event — a Stripe payment, an x402 settlement, a royalty
 statement row — into auditable entitlements, computed by a versioned,
 stateful, cross-rail rule graph. One engine, no industry branches:
