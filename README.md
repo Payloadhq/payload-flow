@@ -179,3 +179,4 @@ ACCEPTANCE.md          # §14 criterion-by-criterion evidence
 ## Links
 
 - Telegram: https://t.me/payloadtool
+- Patreon: https://patreon.com/PayloadTools
