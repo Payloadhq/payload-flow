@@ -5,18 +5,15 @@
 <p align="center"><img src="docs/logo.png" alt="payload-flow logo" width="200"></p>
 # RevRule by Payload - Programmable Revenue Rules Engine
 
-**RevRule** turns any qualifying economic event (a Stripe payment, an x402
-settlement, a royalty statement row) into auditable entitlements, computed by
-a versioned, stateful, cross-rail rule graph. One engine, no industry
-branches: creative-economics splits, SaaS marketplace payouts, and
-machine-commerce micropayments are all configurations of the same generic
-primitives.
+**RevRule turns any economic event into auditable entitlements: who is owed what, computed by a versioned, stateful rule graph.**
 
-**Live now:** the hosted RevRule API at `https://payload-rail.fly.dev`
-([quickstart](https://payloadhq.github.io/flow-rail.html)). Get a free API key
-with one curl call, define a graph, send events. Or run the
-[Flow Sandbox](https://payloadhq.github.io/flow-sandbox.html) in your browser
-with no key at all.
+A Stripe payment, an x402 settlement, a royalty statement row. RevRule evaluates the event against your revenue graph and returns exact per-party entitlements, conserved to the micro-unit, with an append-only hash-chained ledger entry explaining every line. One engine, no industry branches: creative-economics splits, SaaS marketplace payouts, and machine-commerce micropayments are all configurations of the same generic primitives. It computes who is owed what; regulated partners move the money.
+
+**Why it exists:** revenue splits live in spreadsheets and memory. When money arrives but nobody agrees on the math, disputes eat the margin. RevRule makes the economics deterministic, explainable, and auditable.
+
+**Try it (no signup):** run the [RevRule Sandbox](https://payloadhq.github.io/flow-sandbox.html) in your browser, or get a free API key with one curl call and hit the hosted RevRule API at `https://payload-rail.fly.dev` ([quickstart](https://payloadhq.github.io/revrule-api.html)).
+
+Want it hosted? [RevRule by Payload](https://payloadtools.gumroad.com/l/revrule-by-payload) is $99 one-time. Found the sandbox useful? Star the repo.
 
 ## What it is
 
