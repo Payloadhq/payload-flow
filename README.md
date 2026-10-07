@@ -2,6 +2,7 @@
 > PAYLOAD → VEYLINE (flagship) → CALLX402 (action layer) → REVRULE (separate) → developer products → free utilities.
 > This repo: **RevRule by Payload — programmable revenue rules engine (this repo holds the engine).**
 
+<p align="center"><img src="docs/logo.png" alt="payload-flow logo" width="200"></p>
 # RevRule by Payload - Programmable Revenue Rules Engine
 
 **RevRule** turns any qualifying economic event (a Stripe payment, an x402
