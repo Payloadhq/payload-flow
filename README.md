@@ -12,7 +12,7 @@ branches: creative-economics splits, SaaS marketplace payouts, and
 machine-commerce micropayments are all configurations of the same generic
 primitives.
 
-**Live now:** the hosted Rail API at `https://payload-rail.fly.dev`
+**Live now:** the hosted RevRule API at `https://payload-rail.fly.dev`
 ([quickstart](https://payloadhq.github.io/flow-rail.html)). Get a free API key
 with one curl call, define a graph, send events. Or run the
 [Flow Sandbox](https://payloadhq.github.io/flow-sandbox.html) in your browser
@@ -47,7 +47,7 @@ with no key at all.
   payloads; the engine and tests make no live network calls. A live-rail
   acceptance run passed 2026-10-03/04: a real $1.00 Stripe charge and two real
   0.10-USDC Base Sepolia settlements, each processed by the real adapters
-  and the Rail engine with the arithmetic verified to the micro-unit. Full
+  and the RevRule engine with the arithmetic verified to the micro-unit. Full
   evidence is in
   `acceptance/ACCEPTANCE_STRIPE_2026-10-03.md` and
   `acceptance/ACCEPTANCE_X402_2026-10-03.md` (not yet pushed to this repo;
@@ -89,7 +89,7 @@ floats anywhere in the money path. `remainder` takes whatever is left, so
 
 ## Links
 
-- Rail quickstart: https://payloadhq.github.io/flow-rail.html
+- RevRule API quickstart: https://payloadhq.github.io/flow-rail.html
 - Browser sandbox (no key needed): https://payloadhq.github.io/flow-sandbox.html
 - Human console: https://github.com/Payloadhq/revrule-console
 - Telegram: https://t.me/payloadtool
