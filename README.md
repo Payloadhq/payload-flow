@@ -39,11 +39,14 @@ with no key at all.
 - **Not custody.** Distributions are `proposed` instructions only. The
   engine never holds funds and never controls settlement timing.
 - **No real-money execution in this repo.** Adapters run against supplied
-  payloads; the engine and tests make no live network calls. Live-rail
-  acceptance passed 2026-10-03/04: a real $1.00 Stripe charge, two real
+  payloads; the engine and tests make no live network calls. A live-rail
+  acceptance run passed 2026-10-03/04: a real $1.00 Stripe charge, two real
   0.10-USDC Base Sepolia settlements, and a synthetic $1,000 royalty
   statement, each processed by the real adapters and the Rail engine with
-  the arithmetic verified to the micro-unit (see ACCEPTANCE.md). All
+  the arithmetic verified to the micro-unit. Full evidence is in
+  `acceptance/ACCEPTANCE_STRIPE_2026-10-03.md` and
+  `acceptance/ACCEPTANCE_X402_2026-10-03.md` (not yet pushed to this repo;
+  the published ACCEPTANCE.md covers the pre-live criteria). All
   distributions remain `proposed`.
 
 ## How to run
