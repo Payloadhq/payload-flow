@@ -95,3 +95,9 @@ floats anywhere in the money path. `remainder` takes whatever is left, so
 ## License
 
 MIT - see [LICENSE](LICENSE). Copyright 2026 Payload.
+
+---
+
+**More from Payload** · [payloadhq.github.io](https://payloadhq.github.io/) · [all Payload repos](https://github.com/Payloadhq)
+
+Related: [revrule-console](https://github.com/Payloadhq/revrule-console) · [revrule-csv-import](https://github.com/Payloadhq/revrule-csv-import) · [n8n-nodes-payload-flow](https://github.com/Payloadhq/n8n-nodes-payload-flow)
