@@ -286,16 +286,18 @@ function buildExecutionResult(
   db: Database.Database,
   action: string,
   body: Record<string, unknown>,
+  orgId: string,
 ): Record<string, unknown> | null {
   // evidence: show the rail's own invocation record (audit trail).
+  // Scoped to the caller's org: cross-tenant lookups return not-found.
   if (action === 'evidence') {
     const id = typeof body['invocation_id'] === 'string' ? (body['invocation_id'] as string) : null;
     if (!id) {
       return { executed: false, error: 'evidence requires invocation_id in the request body' };
     }
     const row = db
-      .prepare('SELECT invocation_id, org_id, action, via, created_at FROM callx402_invocations WHERE invocation_id = ?')
-      .get(id) as Record<string, unknown> | undefined;
+      .prepare('SELECT invocation_id, org_id, action, via, created_at FROM callx402_invocations WHERE invocation_id = ? AND org_id = ?')
+      .get(id, orgId) as Record<string, unknown> | undefined;
     if (!row) {
       return { executed: false, error: `no invocation found for ${id}` };
     }
@@ -308,14 +310,15 @@ function buildExecutionResult(
     };
   }
   // explain: plain-language summary of a rail invocation.
+  // Scoped to the caller's org: cross-tenant lookups return not-found.
   if (action === 'explain') {
     const id = typeof body['invocation_id'] === 'string' ? (body['invocation_id'] as string) : null;
     if (!id) {
       return { executed: false, error: 'explain requires invocation_id in the request body' };
     }
     const row = db
-      .prepare('SELECT invocation_id, action, via, created_at FROM callx402_invocations WHERE invocation_id = ?')
-      .get(id) as Record<string, unknown> | undefined;
+      .prepare('SELECT invocation_id, action, via, created_at FROM callx402_invocations WHERE invocation_id = ? AND org_id = ?')
+      .get(id, orgId) as Record<string, unknown> | undefined;
     if (!row) {
       return { executed: false, error: `no invocation found for ${id}` };
     }
@@ -1067,9 +1070,10 @@ export function buildCallx402Router(db: Database.Database, opts: Callx402RouterO
             keyId: resolved.keyId,
           });
           recordOperation(db, resolved.orgId, 'veyline');
-          const execution = buildExecutionResult(db, action, (req.body ?? {}) as Record<string, unknown>);
-          res.status(200).json({
-            ok: true,
+          const execution = buildExecutionResult(db, action, (req.body ?? {}) as Record<string, unknown>, resolved.orgId);
+          const execOk = !execution || execution.executed !== false;
+          res.status(execOk ? 200 : 422).json({
+            ok: execOk,
             action,
             display: ACTION_DISPLAY[action],
             via: 'subscription',
@@ -1172,9 +1176,10 @@ export function buildCallx402Router(db: Database.Database, opts: Callx402RouterO
         return recordInvocation(db, { orgId: payerOrg, action, via: 'x402' });
       })();
       recordOperation(db, payerOrg, 'callx402' as ProductId);
-      const execution = buildExecutionResult(db, action, body as Record<string, unknown>);
-      res.status(200).json({
-        ok: true,
+      const execution = buildExecutionResult(db, action, body as Record<string, unknown>, payerOrg);
+      const execOk = !execution || execution.executed !== false;
+      res.status(execOk ? 200 : 422).json({
+        ok: execOk,
         action,
         display: ACTION_DISPLAY[action],
         via: 'x402',
@@ -1236,9 +1241,10 @@ export function buildCallx402Router(db: Database.Database, opts: Callx402RouterO
     }
     recordInvocation(db, { orgId: consumed.org_id, action, via: 'credit', creditId: creditIdRaw });
     recordOperation(db, consumed.org_id, 'callx402' as ProductId);
-    const execution = buildExecutionResult(db, action, body as Record<string, unknown>);
-    res.status(200).json({
-      ok: true,
+    const execution = buildExecutionResult(db, action, body as Record<string, unknown>, consumed.org_id);
+    const execOk = !execution || execution.executed !== false;
+    res.status(execOk ? 200 : 422).json({
+      ok: execOk,
       action,
       display: ACTION_DISPLAY[action],
       via: 'credit',
