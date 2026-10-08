@@ -1,7 +1,12 @@
-# Multi-stage build: compiles mvp engine and rail service inside the image,
+# Multi-stage build: compiles the engine and rail service inside the image,
 # so `fly deploy` works from a clean clone with no local pre-build step.
 #
-# Build context is the repo root (products/payload-flow/).
+# Repository layout (engine at repo root, rail/ service):
+#   /package.json, /src/, /tsconfig.json   -> engine (@payload/flow-rail)
+#   /rail/package.json, /rail/src/         -> rail service
+# The rail's file:.. dependency resolves to the repo root.
+#
+# Build context is the repo root.
 # Validate locally with the same context Fly uses:
 #   docker build -f rail/Dockerfile -t payload-rail:local .
 
@@ -9,32 +14,35 @@
 FROM node:20-slim AS builder
 WORKDIR /build
 
-# Manifests first for layer caching.
-COPY mvp/package.json mvp/package-lock.json* ./mvp/
+# Manifests first for layer caching. Engine lives at the build root so
+# rail's file:.. dependency resolves correctly.
+COPY package.json package-lock.json* ./
 COPY rail/package.json rail/package-lock.json* ./rail/
 
 # Full installs (dev deps needed for tsc).
-RUN cd mvp && npm ci --no-audit --no-fund
+RUN npm ci --no-audit --no-fund
 RUN cd rail && npm ci --no-audit --no-fund
 
-# Sources. The file:../mvp link resolves because the repo layout is
-# preserved (/build/rail -> ../mvp == /build/mvp).
-COPY mvp/ ./mvp/
+# Sources.
+COPY src/ ./src/
+COPY tsconfig.json ./
 COPY rail/ ./rail/
 # Extract vendored v2 runtime (shipped as tarball).
 RUN cd rail/src && tar -xzf vendor.tgz && rm vendor.tgz
 
-# Compile. rail build also vendors rail/src/vendor -> dist/vendor.
-RUN cd mvp && npm run build
+# Compile engine, then rail (rail build vendors src/vendor -> dist/vendor).
+RUN npm run build
 RUN cd rail && npm run build
 
 # ---------- runtime ----------
 FROM node:20-slim
+# Engine lives at the filesystem root so rail's file:.. dependency
+# (from /app) resolves to / correctly.
 WORKDIR /app
 
 COPY rail/package.json rail/package-lock.json ./
-COPY mvp/package.json /mvp/package.json
-COPY --from=builder /build/mvp/dist /mvp/dist
+COPY package.json /package.json
+COPY --from=builder /build/dist /dist
 
 # better-sqlite3 needs a native build when no prebuilt matches the exact
 # node version: install the toolchain, build, then remove it to keep the
