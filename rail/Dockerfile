@@ -1,17 +1,38 @@
-FROM node:20-slim
-
-# Build context is products/payload-flow/ (so the file:../mvp engine
-# dependency resolves):
-#   docker build -f rail/Dockerfile -t payload-rail:v1 .
+# Multi-stage build: compiles mvp engine and rail service inside the image,
+# so `fly deploy` works from a clean clone with no local pre-build step.
 #
-# better-sqlite3 is built from source in the image (prebuilts do not cover
-# every node patch version); the toolchain is removed after the build.
+# Build context is the repo root (products/payload-flow/).
+# Validate locally with the same context Fly uses:
+#   docker build -f rail/Dockerfile -t payload-rail:local .
+
+# ---------- builder ----------
+FROM node:20-slim AS builder
+WORKDIR /build
+
+# Manifests first for layer caching.
+COPY mvp/package.json mvp/package-lock.json* ./mvp/
+COPY rail/package.json rail/package-lock.json* ./rail/
+
+# Full installs (dev deps needed for tsc).
+RUN cd mvp && npm ci --no-audit --no-fund
+RUN cd rail && npm ci --no-audit --no-fund
+
+# Sources. The file:../mvp link resolves because the repo layout is
+# preserved (/build/rail -> ../mvp == /build/mvp).
+COPY mvp/ ./mvp/
+COPY rail/ ./rail/
+
+# Compile. rail build also vendors rail/src/vendor -> dist/vendor.
+RUN cd mvp && npm run build
+RUN cd rail && npm run build
+
+# ---------- runtime ----------
+FROM node:20-slim
 WORKDIR /app
 
 COPY rail/package.json rail/package-lock.json ./
 COPY mvp/package.json /mvp/package.json
-# Engine sources (dist/ is the compiled library entrypoint).
-COPY mvp/dist /mvp/dist
+COPY --from=builder /build/mvp/dist /mvp/dist
 
 # better-sqlite3 needs a native build when no prebuilt matches the exact
 # node version: install the toolchain, build, then remove it to keep the
@@ -21,10 +42,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends python3 make g+
   && apt-get purge -y python3 make g++ && apt-get autoremove -y \
   && rm -rf /var/lib/apt/lists/*
 
-COPY rail/dist ./dist
-# Vendored callx402 v2.0.0 diagnostic modules (CJS) for server-side action
-# execution. Copied raw; tsc excludes src/vendor (see tsconfig).
-COPY rail/src/vendor ./dist/vendor
+COPY --from=builder /build/rail/dist ./dist
 
 RUN useradd --create-home --shell /usr/sbin/nologin rail \
   && mkdir -p /data \
