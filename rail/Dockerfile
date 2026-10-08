@@ -20,6 +20,7 @@ COPY package.json package-lock.json* ./
 COPY rail/package.json rail/package-lock.json* ./rail/
 
 # Full installs (dev deps needed for tsc).
+RUN npm ci --no-audit --no-fund (dev deps needed for tsc).
 RUN npm ci --no-audit --no-fund
 RUN cd rail && npm ci --no-audit --no-fund
 
@@ -30,7 +31,8 @@ COPY rail/ ./rail/
 # Extract vendored v2 runtime (shipped as tarball).
 RUN cd rail/src && tar -xzf vendor.tgz && rm vendor.tgz
 
-# Compile engine, then rail (rail build vendors src/vendor -> dist/vendor).
+# Compile engine, then rail.
+RUN npm run build (rail build vendors src/vendor -> dist/vendor).
 RUN npm run build
 RUN cd rail && npm run build
 
