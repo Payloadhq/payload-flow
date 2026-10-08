@@ -981,6 +981,21 @@ export function buildCallx402Router(db: Database.Database, opts: Callx402RouterO
       return;
     }
 
+    // Pre-payment validation: ensure the action can actually execute with the
+    // provided inputs BEFORE any payment/credit is consumed. This prevents
+    // silent loss of payment when execution would fail.
+    const bodyParams = (req.body ?? {}) as Record<string, unknown>;
+    if (action === 'evidence' || action === 'explain') {
+      const invocationId = bodyParams['invocation_id'];
+      if (typeof invocationId !== 'string' || !invocationId) {
+        res.status(400).json(errBody('MISSING_INPUT', `${action} requires invocation_id in the request body`));
+        return;
+      }
+    }
+    // Actions not in SERVER_EXECUTABLE_ACTIONS and not evidence/explain
+    // require a local runtime; they are authorized but not executed server-side.
+    // This is expected and does not consume payment for execution.
+
     const send402 = async (): Promise<void> => {
       const config = loadCryptoConfig();
       if (!config.enabled) {
