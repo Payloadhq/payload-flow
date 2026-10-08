@@ -64,6 +64,10 @@ import {
 } from './callx402-execute.js';
 import { VEYLINE_TIERS } from './purchase.js';
 import {
+  verifyPayerAuthorization,
+  type PayerAuthorization,
+} from './payer-auth.js';
+import {
   loadCryptoConfig,
   usdcToBaseUnits,
   verifyUsdcPayment,
@@ -1112,6 +1116,11 @@ export function buildCallx402Router(db: Database.Database, opts: Callx402RouterO
     // x402 endpoint): atomic txHash reservation before the slow RPC closes
     // the TOCTOU window; the hash is the payment nonce and can never be
     // spent twice.
+    //
+    // SECURITY: Requires cryptographic payer authorization. The redeemer must
+    // prove control of the paying wallet via EIP-191 signature over the
+    // action, txHash, quote, network, recipient, nonce, and expiry. A public
+    // txHash alone NEVER authorizes an action (prevents first-redeemer abuse).
     if (typeof body.txHash === 'string' && body.txHash) {
       const config = loadCryptoConfig();
       if (!config.enabled) {
@@ -1125,6 +1134,29 @@ export function buildCallx402Router(db: Database.Database, opts: Callx402RouterO
         res.status(400).json(errBody('INVALID_TX_HASH', 'txHash must be a 0x-prefixed 32-byte hash'));
         return;
       }
+      // Payer authorization is MANDATORY. Fail closed if missing or invalid.
+      const payerAuth = (body as { payer_auth?: unknown }).payer_auth as PayerAuthorization | undefined;
+      if (!payerAuth || typeof payerAuth !== 'object') {
+        res.status(401).json(errBody('PAYER_AUTH_REQUIRED', 'cryptographic payer authorization is required; sign the redemption with the paying wallet'));
+        return;
+      }
+      // Bind the authorization to this specific redemption
+      if (payerAuth.txHash.toLowerCase() !== txHash) {
+        res.status(401).json(errBody('AUTH_TX_MISMATCH', 'payer authorization txHash does not match submitted txHash'));
+        return;
+      }
+      if (payerAuth.action !== action) {
+        res.status(401).json(errBody('AUTH_ACTION_MISMATCH', 'payer authorization action does not match requested action'));
+        return;
+      }
+      const authResult = verifyPayerAuthorization(payerAuth, Math.floor(Date.now() / 1000));
+      if (!authResult.valid) {
+        res.status(401).json(errBody(authResult.error || 'PAYER_AUTH_INVALID', 'payer authorization verification failed'));
+        return;
+      }
+      // The verified wallet becomes the payer org. The signature proves the
+      // redeemer controls this wallet.
+      const verifiedWallet = authResult.signer!.toLowerCase();
       // Valuation: resolve the quoted price BEFORE reserving the payment
       // hash. With { quote_id, quote } the rail re-derives the quote from
       // the echoed canonical inputs and rejects mismatches, expired
@@ -1185,7 +1217,15 @@ export function buildCallx402Router(db: Database.Database, opts: Callx402RouterO
       }
       // Atomic: confirm the payment, record the invocation, meter. The
       // txHash can never authorize a second invocation.
-      const payerOrg = `x402_${payment.from.toLowerCase()}`;
+      //
+      // SECURITY: The on-chain `from` must match the signature-verified wallet.
+      // This binds the payment to the authorized redeemer.
+      if (payment.from.toLowerCase() !== verifiedWallet) {
+        releaseTxHash(db, txHash);
+        res.status(401).json(errBody('PAYER_MISMATCH', 'on-chain payer does not match authorized wallet'));
+        return;
+      }
+      const payerOrg = `x402_${verifiedWallet}`;
       const invocationId = db.transaction((): string => {
         confirmTxHash(db, txHash, `callx402:${action}`, payment.amountBaseUnits);
         return recordInvocation(db, { orgId: payerOrg, action, via: 'x402' });
