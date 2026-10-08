@@ -21,6 +21,8 @@ RUN cd rail && npm ci --no-audit --no-fund
 # preserved (/build/rail -> ../mvp == /build/mvp).
 COPY mvp/ ./mvp/
 COPY rail/ ./rail/
+# Extract vendored v2 runtime (shipped as tarball).
+RUN cd rail/src && tar -xzf vendor.tgz && rm vendor.tgz
 
 # Compile. rail build also vendors rail/src/vendor -> dist/vendor.
 RUN cd mvp && npm run build
