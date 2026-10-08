@@ -19,7 +19,7 @@
   "dependencies": {
     "@noble/curves": "^2.4.0",
     "@noble/hashes": "^2.4.0",
-    "@payload/flow-rail": "file:../mvp",
+    "@payload/flow-rail": "file:..",
     "better-sqlite3": "^12.2.0",
     "express": "^4.21.2",
     "stripe": "^23.0.0"
