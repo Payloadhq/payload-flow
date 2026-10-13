@@ -33,6 +33,7 @@ export interface VerifiedErc20Transfer extends TransferLocator {
   blockNumber: number;
   tokenAddress: string;
   recipientAddress: string;
+  senderAddress: string;
   amountBaseUnits: string;
   confirmations: number;
   /** Must be confirmed by checking the transaction receipt, not presumed. */
@@ -42,6 +43,8 @@ export interface VerifiedErc20Transfer extends TransferLocator {
 export interface PayoutVerificationOptions {
   expectedChainId: number;
   expectedTokenAddress: string;
+  /** Payout executor / treasury address authorized for this instruction. */
+  expectedSenderAddress: string;
   /** ERC-20 decimals independently established from trusted token config. */
   tokenDecimals: number;
   minConfirmations?: number;
@@ -110,6 +113,7 @@ export async function recordVerifiedOnchainPayout(
   const hash = txHash(locator.txHash);
   const expectedToken = address(options.expectedTokenAddress, 'expectedTokenAddress');
   const recipient = address(distribution.destination.address, 'distribution destination');
+  const sender = address(options.expectedSenderAddress, 'expectedSenderAddress');
   if (locator.chainId !== options.expectedChainId) {
     throw new Error('transfer chain does not match configured payout chain');
   }
@@ -143,6 +147,9 @@ export async function recordVerifiedOnchainPayout(
   if (proof.confirmations < confirmations) throw new Error('payout transfer has insufficient confirmations');
   if (address(proof.tokenAddress, 'verified token') !== expectedToken) {
     throw new Error('verified token is not the configured payout token');
+  }
+  if (address(proof.senderAddress, 'verified sender') !== sender) {
+    throw new Error('verified transfer sender is not the approved payout executor');
   }
   if (address(proof.recipientAddress, 'verified recipient') !== recipient) {
     throw new Error('verified transfer recipient does not match entitlement destination');
@@ -187,6 +194,7 @@ export async function recordVerifiedOnchainPayout(
     blockNumber: proof.blockNumber,
     tokenAddress: expectedToken,
     recipientAddress: recipient,
+    senderAddress: sender,
     amountBaseUnits: proof.amountBaseUnits,
     confirmationsAtVerification: proof.confirmations,
     verifiedBy: options.verifiedBy.trim(),
