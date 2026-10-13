@@ -233,6 +233,7 @@ export interface PayoutOnchainEvidence {
   blockNumber: number;
   tokenAddress: string;
   recipientAddress: string;
+  senderAddress: string;
   amountBaseUnits: string;
   confirmationsAtVerification: number;
   verifiedBy: string;
