@@ -38,3 +38,8 @@ export {
 } from './rules.js';
 export { validateEvent, validateTouchEvent, EventValidationError } from './events.js';
 export { exportGraph, importGraph } from './graph.js';
+
+// Optional non-custodial payout receipt evidence (independent partner verification).
+export { recordVerifiedOnchainPayout, readEntitlementsWithPayouts } from './payout-evidence.js';
+export type { TransferLocator, VerifiedErc20Transfer, PayoutVerificationOptions } from './payout-evidence.js';
+export { createEvmRpcTransferVerifier } from './evm-receipt-verifier.js';
