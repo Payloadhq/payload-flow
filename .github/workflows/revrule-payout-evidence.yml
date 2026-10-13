@@ -1,0 +1,32 @@
+name: RevRule payout evidence checks
+
+on:
+  pull_request:
+    paths:
+      - "src/payout-evidence.ts"
+      - "src/evm-receipt-verifier.ts"
+      - "src/types.ts"
+      - "src/index.ts"
+      - "test/payout-evidence.test.ts"
+      - ".github/workflows/revrule-payout-evidence.yml"
+  push:
+    branches:
+      - feat/revrule-verified-payout-evidence-20261013
+
+permissions:
+  contents: read
+
+jobs:
+  sdk-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
