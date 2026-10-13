@@ -132,7 +132,8 @@ export async function recordVerifiedOnchainPayout(
     'dist:' + entry.eventId + ':' + entry.ruleId + ':' + entry.participantId === distribution.instructionId &&
     entry.amountMicros === distribution.amountMicros
   );
-  if (!entitlement) {
+  if (!entitlement || entitlement.ruleId === undefined ||
+      entitlement.participantId === undefined || entitlement.amountMicros === undefined) {
     throw new Error('matching entitlement line for payout instruction not found');
   }
 
