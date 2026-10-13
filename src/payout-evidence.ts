@@ -99,13 +99,17 @@ export async function recordVerifiedOnchainPayout(
   if (distribution.rail !== 'x402' && distribution.rail !== 'stablecoin') {
     throw new Error('on-chain payout evidence requires x402 or stablecoin rail');
   }
-  safeInt(distribution.amountMicros, 'distribution.amountMicros');
+  if (distribution.destination.rail !== 'x402' && distribution.destination.rail !== 'stablecoin') {
+    throw new Error('payout destination must use an on-chain rail');
+  }
+  safeInt(distribution.amountMicros, 'distribution.amountMicros', 1);
   safeInt(locator.chainId, 'locator.chainId', 1);
   safeInt(locator.logIndex, 'locator.logIndex');
   safeInt(options.expectedChainId, 'expectedChainId', 1);
   safeInt(options.tokenDecimals, 'tokenDecimals');
   if (options.tokenDecimals > 36) throw new Error('tokenDecimals exceeds supported bound');
-  const confirmations = options.minConfirmations ?? 1;
+  // A conservative default; production must set chain-appropriate finality policy.
+  const confirmations = options.minConfirmations ?? 12;
   safeInt(confirmations, 'minConfirmations', 1);
   if (!options.verifiedBy || options.verifiedBy.trim().length > 128) {
     throw new Error('verifiedBy must name a trusted verifier (max 128 chars)');
