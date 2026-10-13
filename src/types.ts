@@ -219,7 +219,26 @@ export interface Entitlement {
   reason: string;
 }
 
-export type LedgerEntryType = 'ENTITLEMENT' | 'FEE' | 'SKIPPED' | 'REVERSAL' | 'VERSION' | 'CONTRIBUTION';
+/** Immutable metadata for a verified outgoing ERC-20 entitlement payout.
+ * A transaction hash alone does not identify a transfer inside a batched tx.
+ * This is payout evidence, NOT a new economic/revenue event.
+ */
+export interface PayoutOnchainEvidence {
+  instructionId: string;
+  paymentKind: 'entitlement_payout';
+  chainId: number;
+  txHash: string;
+  logIndex: number;
+  blockHash: string;
+  blockNumber: number;
+  tokenAddress: string;
+  recipientAddress: string;
+  amountBaseUnits: string;
+  confirmationsAtVerification: number;
+  verifiedBy: string;
+}
+
+export type LedgerEntryType = 'ENTITLEMENT' | 'FEE' | 'SKIPPED' | 'REVERSAL' | 'VERSION' | 'CONTRIBUTION' | 'PAYOUT_SETTLED';
 
 export interface LedgerEntry {
   seq: number;
@@ -233,6 +252,8 @@ export interface LedgerEntry {
   amountMicros?: Micros;
   /** Why this entry exists — links event → graph version → rule. */
   reason: string;
+  /** Present only on PAYOUT_SETTLED entries; records externally verified proof. */
+  payoutEvidence?: PayoutOnchainEvidence;
   prevHash: string;
   hash: string;
 }
