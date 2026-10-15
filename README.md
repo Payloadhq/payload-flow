@@ -84,6 +84,14 @@ floats anywhere in the money path. `remainder` takes whatever is left, so
 | Weighted multi-touch attribution, oracle milestones, stablecoin payout rail, LICENSE registry adjudication, contribution-graph verification | Modeled, not executed |
 | Tax filing, securities-like revenue interests, dispute arbitration, multi-currency netting | Not yet modeled |
 
+## Evaluate RevRule
+
+- **Problem:** revenue splits computed in spreadsheets and memory, then disputed when money arrives. RevRule makes the math deterministic, explainable, and auditable.
+- **Console:** the live console at https://payload-rail.fly.dev/revrule-console/ issues a free self-serve API key and hosts the graph, entitlement, and payout-evidence views.
+- **Sandbox:** https://payloadhq.github.io/revrule-sandbox.html runs the actual engine in your browser, no signup.
+- **License:** the hosted product, [RevRule by Payload](https://payloadhq.github.io/revrule.html), is $99 one-time.
+- **Funds:** RevRule never holds funds and never executes payouts. It computes entitlements and records evidence; regulated partners move the money.
+
 ## Links
 
 - RevRule API quickstart: https://payloadhq.github.io/flow-rail.html
